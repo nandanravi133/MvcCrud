@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcApp01.Models;
+namespace MvcApp01.Controllers
+{
+    public class HomeController : Controller
+    {
+        //
+        // GET: /Home/
+
+
+        public ActionResult StudentDetail()
+        {
+            StudentDatafromDB studentDataobj = new StudentDatafromDB();
+            List<Student> GetStudent = studentDataobj.StudentProperty.ToList();
+            return View(GetStudent);
+        }
+     
+        [HttpPost]
+        public ActionResult Edit(Student s)
+        {
+            StudentDatafromDB ds = new StudentDatafromDB();
+            ds.UpdateStudent(s);
+            return RedirectToAction("StudentDetail");
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            StudentDatafromDB ds = new StudentDatafromDB();
+            Student s = ds.StudentProperty.Single(x => x.Id == id);
+            return View(s);
+
+        }
+        [HttpPost]
+        [ActionName("Delete")]
+        public ActionResult Delete_Post(int id)
+        {
+            StudentDatafromDB db = new StudentDatafromDB();
+            db.Delete(id);
+            return RedirectToAction("StudentDetail");
+        }  
+
+      [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+      
+      [HttpPost]
+        [ActionName("Create")]
+      public ActionResult CreateMethod()
+      {
+          Student s = new Student();
+          if (ModelState.IsValid)
+          {
+        
+          TryUpdateModel(s);
+         
+              StudentDatafromDB db = new StudentDatafromDB();
+              db.InsertStudent(s);
+              return RedirectToAction("StudentDetail");
+          }
+          return View();
+          
+          
+      }
+        
+    }
+}

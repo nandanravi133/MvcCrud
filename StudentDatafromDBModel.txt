@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
+namespace MvcApp01.Models
+{
+    public class StudentDatafromDB
+    {
+        public void InsertStudent(Student student)
+        {
+
+            using (SqlConnection con = new SqlConnection())
+            {
+                con.ConnectionString = "Data Source=SAM-PC\\SQLEXPRESS;DataBase=DesignerDB;Integrated Security=true;";
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "insert into tblnew(name,email,city) values(@name,@email,@city)";
+                cmd.Parameters.AddWithValue("@name", student.Name);
+                cmd.Parameters.AddWithValue("@email", student.Email);
+                cmd.Parameters.AddWithValue("@city", student.City);
+                cmd.Connection = con;
+                con.Open();
+                cmd.ExecuteNonQuery();
+
+            }
+        }
+        public void Delete(int id)
+        {
+            using (SqlConnection con = new SqlConnection())
+            {
+                con.ConnectionString = "Data Source=SAM-PC\\SQLEXPRESS;DataBase=DesignerDB;Integrated Security=true;";
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "delete from tblnew where id=" + id;
+                cmd.Connection = con;
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+            
+        }
+
+        public void UpdateStudent(Student s)
+        {
+
+            using (SqlConnection con = new SqlConnection())
+            {
+                con.ConnectionString = "Data Source=SAM-PC\\SQLEXPRESS;DataBase=DesignerDB;Integrated Security=true;";
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "Update tblnew set name=@name,email=@email,city=@city where id=@id";
+                cmd.Parameters.AddWithValue("@name", s.Name);
+                cmd.Parameters.AddWithValue("@email", s.Email);
+                cmd.Parameters.AddWithValue("@city", s.City);
+                cmd.Parameters.Add("@id", s.Id);
+                cmd.Connection = con;
+                con.Open();
+                cmd.ExecuteNonQuery();
+
+            }
+        }
+        public IEnumerable<Student> StudentProperty
+        {
+            get
+            {
+                List<Student> StudentList = new List<Student>();
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = "Data Source=SAM-PC\\SQLEXPRESS;DataBase=DesignerDB;Integrated Security=true;";
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandText = "select * from tblnew";
+                    cmd.Connection = con;
+                    con.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        Student s = new Student();
+                        s.Id=Convert.ToInt32(dr["id"]);
+                        s.Name = dr["Name"].ToString();
+                        s.Email = dr["Email"].ToString();
+                        s.City = dr["City"].ToString();
+                        StudentList.Add(s);
+                    }
+                    
+                }
+                return StudentList;
+            }
+        }
+
+    }
+}
